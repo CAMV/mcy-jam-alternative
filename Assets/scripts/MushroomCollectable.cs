@@ -4,9 +4,17 @@ using UnityEngine;
 namespace Assets.Scripts
 {
     [CreateAssetMenu(fileName = "mushroom", menuName = "Data/Collectable/Mushroom")]
-    public class MushroomCollectableDefinition : CollectableDefinition
+    public class MushroomCollectable: Collectable
     {
-        public override CollectableDefinition CreteCollectable()
+        [SerializeField]
+        private Vector3 _minScale;
+        [SerializeField]
+        private Vector3 _maxScale;
+
+
+
+
+        public override GameObject CreteCollectableGO()
         {
             throw new System.NotImplementedException();
         }

@@ -6,7 +6,7 @@ namespace Assets.Scripts
     public class DataLoader : MonoBehaviour
     {
 
-        private CollectableDefinition[] _colDefs;
+        private Collectable[] _colDefs;
         private Character[] _characters;
 
         // Use this for initialization

@@ -5,7 +5,9 @@ namespace Assets.Scripts
 {
     public abstract class RecordCard : MonoBehaviour
     {
-        private CollectableType _cType;
+        private Collectable _collectable;
+
+        private string _name;
 
 
     }
