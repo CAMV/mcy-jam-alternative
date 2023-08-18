@@ -9,12 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f9a0b790a1d2ca54c99edc14f38d2788, type: 3}
-  m_Name: mushroom
+  m_Script: {fileID: 11500000, guid: 09b775773589888428d69caa56879c46, type: 3}
+  m_Name: swamp
   m_EditorClassIdentifier: 
-  _name: 
-  _prefabs: []
-  _biomes: []
-  _regions: []
-  _minScale: {x: 0, y: 0, z: 0}
-  _maxScale: {x: 0, y: 0, z: 0}
+  _name: Swamp
+  _icon: {fileID: 0}
+  _portrait: {fileID: 0}

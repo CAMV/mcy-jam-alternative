@@ -11,10 +11,7 @@ namespace Assets.Scripts
         [SerializeField]
         private Vector3 _maxScale;
 
-
-
-
-        public override GameObject CreteCollectableGO()
+        public override GameObject CreateCollectableGO()
         {
             throw new System.NotImplementedException();
         }

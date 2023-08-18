@@ -9,12 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f9a0b790a1d2ca54c99edc14f38d2788, type: 3}
-  m_Name: mushroom
+  m_Script: {fileID: 11500000, guid: 92336dbda18e98f469a23b07a2b63791, type: 3}
+  m_Name: esmerald_valley
   m_EditorClassIdentifier: 
-  _name: 
-  _prefabs: []
-  _biomes: []
-  _regions: []
-  _minScale: {x: 0, y: 0, z: 0}
-  _maxScale: {x: 0, y: 0, z: 0}
+  _name: Esmerald Valley
+  _flag: {fileID: 0}
+  _stamps: []
+  _mapHighlight: {fileID: 0}
+  _biomes:
+  - {fileID: 11400000, guid: 14f68eff6e9a21e4883a32ef0829fce5, type: 2}

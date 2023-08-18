@@ -19,9 +19,7 @@ namespace Assets.Scripts
         private  Biome[] _biomes;
         [SerializeField]
         private Region[] _regions;
-
-
-
+        
         public string Name { get => _name; }
         public List<(Region region, Biome biome)> Habitats 
         { 
@@ -40,7 +38,7 @@ namespace Assets.Scripts
             }
          }
 
-        public abstract GameObject CreteCollectableGO();
+        public abstract GameObject CreateCollectableGO();
 
     }
 }
