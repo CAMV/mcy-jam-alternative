@@ -9,25 +9,23 @@ public class CameraController : MonoBehaviour
     {
         Desk,
         DeskZoom,
-        Storage
+        TrophyRoom,
+        Greenhouse
     }
 
     [SerializeField]
-    private Transform _storageCamTarget = null;
-    [SerializeField]
-    private Transform _storageCamTargetStart = null;
-    [SerializeField]
-    private GameObject _storageCam = null;
+    private GameObject _trophyCam = null;
     [SerializeField]
     private GameObject _deskCam = null;
     [SerializeField]
     private GameObject _deskZoomCam = null;
+    [SerializeField]
+    private GameObject _greenhouseCam = null;
 
     [SerializeField]
-    private float _storageCamSpeed = 0.5f;
-    [SerializeField]
-    private float _storageCamDistanceTransition = 0.4f;
+    private float _camTransitionCooldown = 0.5f;
 
+    private float _cooldown = 0;
     private CamState _camState = CamState.Desk;
 
     // Update is called once per frame
@@ -36,54 +34,56 @@ public class CameraController : MonoBehaviour
         var vAxis = Input.GetAxis("Vertical");
         var hAxis = Input.GetAxis("Horizontal");
 
-        switch (_camState)
+        if (_camTransitionCooldown > _cooldown)
+            _cooldown += Time.deltaTime;
+        else
         {
-            case CamState.Desk:
-                if (vAxis > 0)
-                {
-                    _camState = CamState.DeskZoom;
-                    _deskCam.SetActive(false);
-                    _deskZoomCam.SetActive(true);
-                }
-                else if (Input.GetAxis("Horizontal") > 0)
-                {
-                    _camState = CamState.Storage;
-                    _storageCamTarget.position = _storageCamTargetStart.position;
-                    _deskCam.SetActive(false);
-                    _storageCam.SetActive(true);
-                }
-                break;
-            case CamState.Storage:
-
-                if (hAxis < 0 && Vector3.Distance(_storageCamTarget.position, _storageCamTargetStart.position) < _storageCamDistanceTransition)
-                {
-                    _camState = CamState.Desk;
-                    _storageCam.SetActive(false);
-                    _deskCam.SetActive(true);
-                }
-                else
-                {
-                    var newX = _storageCamTarget.position.x;
-                    var newY = _storageCamTarget.position.y;
-
-                    if (hAxis != 0)
-                        newX += hAxis * Time.deltaTime * _storageCamSpeed;
-
-                    if (vAxis != 0)
-                        newY += vAxis * Time.deltaTime * _storageCamSpeed;
-
-                    _storageCamTarget.position = new Vector3(newX, newY, _storageCamTargetStart.position.z);
-                }
-
-                break;
-            case CamState.DeskZoom:
-                if (vAxis < 0)
-                {
-                    _camState = CamState.Desk;
-                    _deskZoomCam.SetActive(false);
-                    _deskCam.SetActive(true);
-                }
-                break;
+            switch (_camState)
+            {
+                case CamState.Desk:
+                    if (vAxis > 0)
+                    {
+                        _camState = CamState.Greenhouse;
+                        _deskCam.SetActive(false);
+                        _greenhouseCam.SetActive(true);
+                        _cooldown = 0;
+                    }
+                    else if (hAxis > 0)
+                    {
+                        _camState = CamState.TrophyRoom;
+                        _trophyCam.SetActive(true);
+                        _deskCam.SetActive(false);
+                        _cooldown = 0;
+                    }
+                    break;
+                case CamState.DeskZoom:
+                    if (vAxis < 0)
+                    {
+                        _camState = CamState.Desk;
+                        _deskZoomCam.SetActive(false);
+                        _deskCam.SetActive(true);
+                        _cooldown = 0;
+                    }
+                    break;
+                case CamState.Greenhouse:
+                    if (vAxis < 0)
+                    {
+                        _camState = CamState.Desk;
+                        _greenhouseCam.SetActive(false);
+                        _deskCam.SetActive(true);
+                        _cooldown = 0;
+                    }
+                    break;
+                case CamState.TrophyRoom:
+                    if (hAxis < 0)
+                    {
+                        _camState = CamState.Desk;
+                        _trophyCam.SetActive(false);
+                        _deskCam.SetActive(true);
+                        _cooldown = 0;
+                    }
+                    break;
+            }
         }
     }
 }
