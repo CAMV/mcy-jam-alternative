@@ -1,18 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CameraController : MonoBehaviour
 {
-
-    enum CamState
-    {
-        Desk,
-        DeskZoom,
-        TrophyRoom,
-        Greenhouse
-    }
-
     [SerializeField]
     private GameObject _trophyCam = null;
     [SerializeField]
@@ -23,67 +15,124 @@ public class CameraController : MonoBehaviour
     private GameObject _greenhouseCam = null;
 
     [SerializeField]
-    private float _camTransitionCooldown = 0.5f;
+    private Image _fadeImage = null;
 
-    private float _cooldown = 0;
-    private CamState _camState = CamState.Desk;
+    [SerializeField]
+    private float _transitionDuration = 0.5f;
 
-    // Update is called once per frame
-    void Update()
+    private Color _fadeColour;
+    private CameraType _camState = CameraType.Desk;
+
+    void Awake()
     {
-        var vAxis = Input.GetAxis("Vertical");
-        var hAxis = Input.GetAxis("Horizontal");
+        Locator.ProvideCameraController(this);
+        _fadeColour = _fadeImage.color;
+    }
 
-        if (_camTransitionCooldown > _cooldown)
-            _cooldown += Time.deltaTime;
-        else
+    private IEnumerator SetFadeAlpha(float alpha, float duration)
+    {
+        var t = 0.0f;
+        var c = _fadeColour;
+
+        while (t < duration)
         {
-            switch (_camState)
-            {
-                case CamState.Desk:
-                    if (vAxis > 0)
-                    {
-                        _camState = CamState.Greenhouse;
-                        _deskCam.SetActive(false);
-                        _greenhouseCam.SetActive(true);
-                        _cooldown = 0;
-                    }
-                    else if (hAxis > 0)
-                    {
-                        _camState = CamState.TrophyRoom;
-                        _trophyCam.SetActive(true);
-                        _deskCam.SetActive(false);
-                        _cooldown = 0;
-                    }
-                    break;
-                case CamState.DeskZoom:
-                    if (vAxis < 0)
-                    {
-                        _camState = CamState.Desk;
-                        _deskZoomCam.SetActive(false);
-                        _deskCam.SetActive(true);
-                        _cooldown = 0;
-                    }
-                    break;
-                case CamState.Greenhouse:
-                    if (vAxis < 0)
-                    {
-                        _camState = CamState.Desk;
-                        _greenhouseCam.SetActive(false);
-                        _deskCam.SetActive(true);
-                        _cooldown = 0;
-                    }
-                    break;
-                case CamState.TrophyRoom:
-                    if (hAxis < 0)
-                    {
-                        _camState = CamState.Desk;
-                        _trophyCam.SetActive(false);
-                        _deskCam.SetActive(true);
-                        _cooldown = 0;
-                    }
-                    break;
-            }
+            c.a = Mathf.Lerp(0, alpha, t / duration);
+            _fadeImage.color = c;
+            t += Time.deltaTime;
+            
+            yield return new WaitForEndOfFrame();
         }
+
+        c.a = alpha;
+        _fadeImage.color = c;
+    }
+
+    public void ChangeCamState(CameraType targetCam)
+    {
+        if (_camState == targetCam)
+            return;
+
+        switch (_camState)
+        {
+            case CameraType.TrophyRoom:
+                _trophyCam.SetActive(false);
+                break;
+            case CameraType.Greenhouse:
+                _greenhouseCam.SetActive(false);
+                break;
+            case CameraType.Desk:
+                if (targetCam != CameraType.DeskZoom)
+                    _deskCam.SetActive(false);
+                else
+                {
+                    StartCoroutine(PlayFadeTransition(_camState, targetCam));
+                    return;
+                }
+                break;
+            case CameraType.DeskZoom:
+                if (targetCam == CameraType.FocusMode)
+                {
+                    _deskZoomCam.SetActive(false);
+                }
+                else
+                {
+                    StartCoroutine(PlayFadeTransition(_camState, targetCam));
+                    return;
+                }
+                break;
+            case CameraType.FocusMode:
+                StartCoroutine(SetFadeAlpha(0, _transitionDuration));
+                break;
+        }
+
+        switch (targetCam)
+        {
+            case CameraType.TrophyRoom:
+                _trophyCam.SetActive(true);
+                _camState = CameraType.TrophyRoom;
+                break;
+            case CameraType.Greenhouse:
+                _greenhouseCam.SetActive(true);
+                _camState = CameraType.Greenhouse;
+                break;
+            case CameraType.Desk:
+                _deskCam.SetActive(true);
+                _camState = CameraType.Desk;
+                break;
+            case CameraType.FocusMode:
+                StartCoroutine(SetFadeAlpha(0.9f, _transitionDuration));
+                _camState = CameraType.FocusMode;
+                break;
+        }
+    }
+
+    private IEnumerator PlayFadeTransition(CameraType sourceCam, CameraType targetCam)
+    {
+        var halfCamTC = _transitionDuration / 2;
+        yield return SetFadeAlpha(1, halfCamTC);
+
+        switch (sourceCam)
+        {
+            case CameraType.DeskZoom:
+                _deskZoomCam.SetActive(false);
+                break;
+            case CameraType.Desk:
+                _deskCam.SetActive(false);
+                break;
+        }
+
+        switch (targetCam)
+        {
+            case CameraType.DeskZoom:
+                _deskZoomCam.SetActive(true);
+                _camState = CameraType.DeskZoom;
+                break;
+            case CameraType.Desk:
+                _deskCam.SetActive(true);
+                _camState = CameraType.Desk;
+                break;
+        }
+
+        yield return SetFadeAlpha(0, halfCamTC);
     }
 }
