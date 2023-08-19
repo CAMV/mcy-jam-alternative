@@ -1,16 +1,13 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-namespace Assets.Scripts
+public static class Locator 
 {
-    public class Locator 
-    {
 
-        private static DataLoader _dataLoader = null;
+    private static DataLoader _dataLoader = null;
 
-        public static void ProvideDataLoader(DataLoader dl) => _dataLoader = dl;
-        public static DataLoader GetDataLoader() => _dataLoader;
+    public static void ProvideDataLoader(DataLoader dl) => _dataLoader = dl;
+    public static DataLoader GetDataLoader() => _dataLoader;
 
 
-    }
 }
